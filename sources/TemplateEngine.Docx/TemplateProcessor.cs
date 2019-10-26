@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using System.Xml.Linq;
 using DocumentFormat.OpenXml.Packaging;
@@ -132,6 +133,12 @@ namespace TemplateEngine.Docx
 			if (_isNeedToNoticeAboutErrors)
 				AddErrors(processResult.Errors);
 
+            return this;
+        }
+
+        public TemplateProcessor SetProperties(Action<PackageProperties> configure)
+        {
+            configure(_wordDocument.Properties);
             return this;
         }
 		

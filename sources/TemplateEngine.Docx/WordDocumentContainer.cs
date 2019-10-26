@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -19,16 +20,13 @@ namespace TemplateEngine.Docx
 		internal List<NestedWordDocumentContainer> FooterParts { get; private set; }
 		internal IEnumerable<ImagePart> ImagesPart { get; private set; }
 
-		internal bool HasHeaders
-		{
-			get { return HeaderParts != null && HeaderParts.Any(); }
-		}
-		internal bool HasFooters
-		{
-			get { return FooterParts != null && FooterParts.Any(); }
-		}
+        internal PackageProperties Properties => _wordDocument?.PackageProperties;
 
-		internal WordDocumentContainer(WordprocessingDocument wordDocument)
+		internal bool HasHeaders => HeaderParts != null && HeaderParts.Any();
+
+        internal bool HasFooters => FooterParts != null && FooterParts.Any();
+
+        internal WordDocumentContainer(WordprocessingDocument wordDocument)
 		{
 			_wordDocument = wordDocument;
 
@@ -90,12 +88,12 @@ namespace TemplateEngine.Docx
 			return _wordDocument.MainDocumentPart.GetIdOfPart(imagePart);
 		}
 
-		internal void SaveChanges()
+        internal void SaveChanges()
 		{
 			if (MainDocumentPart == null) return;
-
-			// Serialize the XDocument object back to the package.
-			using (var xw = XmlWriter.Create(_wordDocument.MainDocumentPart.GetStream(FileMode.Create, FileAccess.Write)))
+            
+            // Serialize the XDocument object back to the package.
+            using (var xw = XmlWriter.Create(_wordDocument.MainDocumentPart.GetStream(FileMode.Create, FileAccess.Write)))
 			{
 				MainDocumentPart.Save(xw);
 			}
@@ -124,10 +122,9 @@ namespace TemplateEngine.Docx
 
 		#region IDisposable
 		public void Dispose()
-		{
-			if (_wordDocument != null)
-				_wordDocument.Dispose();
-		}
+        {
+            _wordDocument?.Dispose();
+        }
 
 		#endregion
 
