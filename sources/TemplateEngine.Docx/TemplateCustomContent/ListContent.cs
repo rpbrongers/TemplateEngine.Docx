@@ -110,7 +110,8 @@ namespace TemplateEngine.Docx
 			if (other == null) return false;
 
             return Name.Equals(other.Name) && 
-                Items.SequenceEqual(other.Items);
+                   (Items == null ||
+                Items.SequenceEqual(other.Items));
 		}
 
 		public override bool Equals(IContentItem other)
